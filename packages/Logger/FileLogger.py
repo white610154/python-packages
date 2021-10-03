@@ -3,7 +3,6 @@ import copy
 from dataclasses import dataclass
 from logging import WARNING, Formatter, LogRecord
 from logging.handlers import TimedRotatingFileHandler
-from posixpath import dirname
 from typing import Any, List
 
 

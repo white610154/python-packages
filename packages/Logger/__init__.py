@@ -3,6 +3,7 @@ from typing import Any
 
 from packages.Logger import LoggerFunc
 from packages.Logger.ConsoleLogger import ConsoleLogConfig
+from packages.Logger.DBLogger import DBLogConfig
 from packages.Logger.FileLogger import FileLogConfig
 
 
@@ -26,7 +27,7 @@ class Logger:
         logTypes: int=0,
         consoleLogConfig: ConsoleLogConfig = None,
         fileLogConfig: FileLogConfig = None,
-        dbLogConfig = None,
+        dbLogConfig: DBLogConfig = None,
         ):
         '''
         Basic settings of logger
@@ -37,11 +38,18 @@ class Logger:
             fileLogConfig (FileLogConfig): config of file log, create new file every day
             dbLogConfig (DBLogConfig): config of DB log, DB support: mariadb(mysql), postgres, mongodb, mssql, sqlite3
         '''
-        consoleLogger = LoggerFunc.console_logger(logTypes & LogType.Console, consoleLogConfig)
-        fileLogger = LoggerFunc.file_logger(logTypes & LogType.File, fileLogConfig)
+        if logTypes & LogType.Console:
+            consoleLogger = LoggerFunc.console_logger(consoleLogConfig)
+            cls.__logger.addHandler(consoleLogger)
 
-        cls.__logger.addHandler(consoleLogger)
-        cls.__logger.addHandler(fileLogger)
+        if logTypes & LogType.File:
+            fileLogger = LoggerFunc.file_logger(fileLogConfig)
+            cls.__logger.addHandler(fileLogger)
+
+        if logTypes & LogType.DB:
+            dbLogger = LoggerFunc.db_logger(logTypes & LogType.DB, dbLogConfig)
+            cls.__logger.addHandler(dbLogger)
+
 
     @classmethod
     def log(cls, level: int, *msgs: Any):
