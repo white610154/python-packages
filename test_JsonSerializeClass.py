@@ -1,4 +1,5 @@
-from JsonSerializeClass import JSC
+from packages.JsonSerializeClass import JSC
+
 
 class Aaa(JSC):
     '''
@@ -8,7 +9,7 @@ class Aaa(JSC):
         self.x = x
         self.y = y
 
-class Bbb:
+class Bbb(JSC):
     '''
     or not to inherit JSC, but implement toDict method to simulate JSC
     '''
@@ -33,5 +34,5 @@ class Ccc(JSC):
 
 if __name__ == '__main__':
     # this will recursively turn object to dictionary
-    print(Ccc(9, 10, 11, 12).toDict())
-    print(Ccc(9, 10, 11, 12).toJson())
+    print(Ccc(9, 10, 11, 12).to_dict())
+    print(Ccc(9, 10, 11, 12).to_json())

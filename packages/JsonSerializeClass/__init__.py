@@ -1,7 +1,8 @@
 import json
 
+
 class JSC:
-    def toDict(self):
+    def to_dict(self):
         d = self.__dict__
         d.update({
             attr: d[attr].toDict()
@@ -10,5 +11,5 @@ class JSC:
             })
         return d
 
-    def toJson(self):
+    def to_json(self):
         return json.dumps(self.toDict())
