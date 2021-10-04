@@ -1,27 +1,17 @@
-from logging import CRITICAL
+from typing import Union
 
-from packages.Logger.ConsoleLogger import ConsoleLogConfig, ConsoleLogger
-from packages.Logger.DBLogger import DBLogConfig, DBLogger, DBType
-from packages.Logger.FileLogger import FileLogConfig, FileLogger
+from .ConsoleLogger import ConsoleLogConfig, ConsoleLogger
+from .DBLogger import *
+from .FileLogger import FileLogConfig, FileLogger
 
 
-def console_logger(config: ConsoleLogConfig=None):
-    if config == None:
-        print("WARNING: console log enable but console log config not set, console log will not work.")
-        return ConsoleLogger(ConsoleLogConfig(level=CRITICAL))
-
+def console_logger(config: ConsoleLogConfig=None) -> ConsoleLogger:
     return ConsoleLogger(config)
 
-def file_logger(config: FileLogConfig=None):
-    if config == None:
-        print("WARNING: file log enable but file log config not set, file log will not work.")
-        return FileLogger(FileLogConfig(level=CRITICAL))
-
+def file_logger(config: FileLogConfig=None) -> FileLogger:
     return FileLogger(config)
 
-def db_logger(config: FileLogConfig):
-    if config == None:
-        print("WARNING: DB log enable but DB log config not set, DB log will not work.")
-        return DBLogger(DBLogConfig(dbType=DBType.Null, level=CRITICAL))
-
-    DBLogger(config)
+def db_logger(config: DBLogConfig) -> MariaLogger:
+    if config.dbType == DBType.Maria:
+        return MariaLogger(config)
+    return

@@ -1,11 +1,16 @@
 import logging
 from typing import Any
 
-from packages.Logger import LoggerFunc
-from packages.Logger.ConsoleLogger import ConsoleLogConfig
-from packages.Logger.DBLogger import DBLogConfig
-from packages.Logger.FileLogger import FileLogConfig
+from . import LoggerFunc
+from .ConsoleLogger import ConsoleLogConfig
+from .DBLogger import DBLogConfig, DBType
+from .FileLogger import FileLogConfig
 
+__all__ = [
+    "LogLevel", "LogType", "Logger",
+    "ConsoleLogConfig", "FileLogConfig",
+    "DBLogConfig", "DBType",
+    ]
 
 class LogLevel:
     DEBUG = logging.DEBUG
@@ -39,17 +44,25 @@ class Logger:
             dbLogConfig (DBLogConfig): config of DB log, DB support: mariadb(mysql), postgres, mongodb, mssql, sqlite3
         '''
         if logTypes & LogType.Console:
-            consoleLogger = LoggerFunc.console_logger(consoleLogConfig)
-            cls.__logger.addHandler(consoleLogger)
+            if consoleLogConfig == None:
+                print("WARNING: console log enable but console log config not set, console log will not work.")
+            else:
+                consoleLogger = LoggerFunc.console_logger(consoleLogConfig)
+                cls.__logger.addHandler(consoleLogger)
 
         if logTypes & LogType.File:
-            fileLogger = LoggerFunc.file_logger(fileLogConfig)
-            cls.__logger.addHandler(fileLogger)
+            if fileLogConfig == None:
+                print("WARNING: file log enable but file log config not set, file log will not work.")
+            else:
+                fileLogger = LoggerFunc.file_logger(fileLogConfig)
+                cls.__logger.addHandler(fileLogger)
 
         if logTypes & LogType.DB:
-            dbLogger = LoggerFunc.db_logger(logTypes & LogType.DB, dbLogConfig)
-            cls.__logger.addHandler(dbLogger)
-
+            if dbLogConfig == None:
+                print("WARNING: DB log enable but DB log config not set, DB log will not work.")
+            else:
+                dbLogger = LoggerFunc.db_logger(dbLogConfig)
+                cls.__logger.addHandler(dbLogger)
 
     @classmethod
     def log(cls, level: int, *msgs: Any):
