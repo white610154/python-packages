@@ -23,7 +23,7 @@ class FileLogConfig:
 
 class FileLogger(TimedRotatingFileHandler):
     def __init__(self, config: FileLogConfig):
-        super().__init__(filename=config.suffix+'.log', when='D')
+        super().__init__(filename=config.filename(), when='D')
 
         self.namer = self.__namer
         self.suffix = "%Y%m%d"
