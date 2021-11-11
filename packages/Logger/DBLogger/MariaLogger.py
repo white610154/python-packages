@@ -3,7 +3,7 @@ from logging import Formatter, Handler, LogRecord
 from typing import Any, Dict, List, Union
 
 import pymysql
-import pymysql.cursors
+from pymysql.cursors import Cursor
 
 from .Base import DBLogConfig
 
@@ -54,19 +54,13 @@ class MariaLogger(Handler):
     def connect(self):
         return pymysql.connect(
             **self.config,
+            connect_timeout=86400,
             cursorclass=pymysql.cursors.DictCursor
             )
 
     def emit(self, record: LogRecord):
-        try:
-            recordTemp = self.format(record)
-            with self.conn.cursor() as cursor:
-                cursor.execute(insertSql.format(**recordTemp.__dict__))
-            self.conn.commit()
-        except ConnectionError:
-            pass
-        except Exception:
-            self.handleError(record)
+        self.check_connection()
+        self.write_db(record)
 
     def format(self, record: LogRecord):
         recordTemp = copy.deepcopy(record)
@@ -75,3 +69,19 @@ class MariaLogger(Handler):
         recordTemp.message = " ".join([str(m) for m in msgs])
         recordTemp.pathname = recordTemp.pathname.replace("\\", "/")
         return recordTemp
+
+    def check_connection(self):
+        try:
+            self.conn.ping(reconnect=True)
+        except Exception:
+            self.conn = self.connect()
+
+    def write_db(self, record: LogRecord):
+        try:
+            recordTemp = self.format(record)
+            cursor: Cursor = self.conn.cursor()
+            with cursor:
+                cursor.execute(insertSql.format(**recordTemp.__dict__))
+            self.conn.commit()
+        except Exception:
+            self.handleError(record)

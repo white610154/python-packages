@@ -17,7 +17,7 @@ class Bbb(JSC):
         self.a = Aaa(x, y)
         self.z = z
 
-    def toDict(self):
+    def to_dict(self):
         return {
             'a': self.a.x + self.a.y,
             'z': self.z,
